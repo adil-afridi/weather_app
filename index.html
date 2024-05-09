@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+
+<body>
+    <div class="card">
+        <div class="search_box">
+            <input type="text" class="search_input">
+            <button><img src="./images/search.png" class="search_icon" alt=""></button>
+        </div>
+
+        <div class="errors">
+            <p>Invalid city!</p>
+        </div>
+
+        <div class="weather">
+            <div class="main">
+                <img src="" class="main_image">
+                <div class="city">
+                    <h1 class="temp"></h1>
+                    <h2 class="city_name"></h2>
+                </div>
+            </div>
+
+
+            <div class="details">
+                <div class="clm">
+                    <img src="./images/humidity.png" alt="">
+                    <div>
+                        <p class="hm"></p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="clm">
+                    <img src="./images/wind.png" alt="">
+                    <div>
+                        <p class="wind"></p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+
+
+        const searchIcon = document.querySelector('.search_icon')
+        const searchInput = document.querySelector('.search_input')
+        const mainImage = document.querySelector('.main_image')
+        const weathers = document.querySelector('.weather')
+        const details = document.querySelector('.details')
+
+        const apiKeys = "355c6ce70121ce626de51eb290231b20";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=";
+
+
+        async function checkWeather(city) {
+            try {
+                const response = await fetch(`${apiUrl} ${city} &appid=${apiKeys}`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to Fetch weather data. Status: ${respnse.status}');
+                }
+
+                const data = await response.json()
+
+
+                const temperatureCelsius = data.main.temp - 273.15;
+
+                document.querySelector('.city_name').textContent = data.name;
+                document.querySelector('.temp').textContent = Math.round(temperatureCelsius) + '°C';
+                document.querySelector('.hm').textContent = data.main.humidity + '%';
+                document.querySelector('.wind').textContent = data.wind.speed + 'km/h';
+
+                if (data.weather[0].main == 'Clear') {
+                    mainImage.src = './images/clear.png';
+                } else if (data.weather[0].main == 'Clouds') {
+                    mainImage.src = './images/clouds.png';
+                } else if (data.weather[0].main == 'Drizzle') {
+                    mainImage.src = './images/drizzle.png';
+                } else if (data.weather[0].main == 'Mist') {
+                    mainImage.src = './images/mist.png';
+                } else if (data.weather[0].main == 'Rain') {
+                    mainImage.src = './images/rain.png';
+                }
+
+                weathers.style.display = 'flex'
+                details.style.display = 'flex'
+                document.querySelector('.errors').style.display = 'none'
+            } catch (error) {
+                console.error(error.message)
+                document.querySelector('.errors').style.display = 'flex'
+                weathers.style.display = 'none'
+                details.style.display = 'none'
+            }
+        }
+
+        searchIcon.addEventListener("click", () => {
+            checkWeather(searchInput.value)
+        })
+
+
+
+
+    </script>
+</body>
+
+</html>
